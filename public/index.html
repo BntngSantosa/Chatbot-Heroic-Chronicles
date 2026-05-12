@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lorong Waktu</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="chat-panel">
+        <header class="chat-header">
+          <div class="hero-avatar"></div>
+          <div class="hero-info">
+            <p class="hero-title">Lorong Waktu</p>
+            <p class="hero-subtitle">Pahlawan Dunia</p>
+          </div>
+        </header>
+
+        <div id="chatMessages" class="chat-messages hidden">
+        </div>
+
+        <form id="chatForm" class="chat-input-area">
+          <div id="filePreview" class="file-preview hidden"></div>
+          <div class="attach-group">
+            <button type="button" id="attachButton" class="input-icon" aria-label="Lampirkan file">+</button>
+            <div id="uploadMenu" class="upload-menu hidden" role="menu" aria-label="Pilih jenis lampiran">
+              <button type="button" class="upload-option" data-type="image">Gambar</button>
+              <button type="button" class="upload-option" data-type="document">Dokumen</button>
+              <button type="button" class="upload-option" data-type="audio">Audio</button>
+            </div>
+          </div>
+          <input id="chatInput" type="text" autocomplete="off" placeholder="Tanyakan sesuatu..." required />
+          <button type="button" class="input-icon mic-button" aria-label="Rekam suara">🎤</button>
+          <button type="submit" class="send-button" aria-label="Kirim pesan">➤</button>
+          <input id="imageInput" type="file" accept="image/*" hidden />
+          <input id="documentInput" type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden />
+          <input id="audioInput" type="file" accept="audio/*" hidden />
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
