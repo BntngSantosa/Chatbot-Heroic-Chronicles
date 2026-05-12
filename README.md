@@ -1,10 +1,10 @@
-# Chatbot Lorong Waktu
+# Chatbot Heroic Chronicles
 
-Chatbot Lorong Waktu adalah aplikasi web interaktif yang menghadirkan percakapan dengan asisten bertema sejarah dan tokoh pahlawan dunia. Aplikasi ini menggunakan backend Node.js/Express untuk meneruskan permintaan ke API Gemini Google GenAI dan frontend sederhana untuk chat, lampiran file, rekaman suara, serta riwayat percakapan.
+Chatbot Heroic Chronicles adalah aplikasi web interaktif yang menghadirkan percakapan dengan asisten bertema sejarah dan tokoh pahlawan dunia. Aplikasi ini menggunakan backend Node.js/Express untuk meneruskan permintaan ke API Gemini Google GenAI dan frontend sederhana untuk chat, lampiran file, rekaman suara, serta riwayat percakapan.
 
 ## Fitur Utama
 
-- Chat bot dengan persona "Lorong Waktu Pahlawan Dunia"
+- Chat bot dengan persona "Heroic Chronicles"
 - Penyimpanan memori percakapan terakhir
 - Riwayat chat lokal dengan kemampuan:
   - Simpan percakapan
