@@ -15,6 +15,36 @@ const filePreview = document.getElementById('filePreview');
 
 let selectedFile = null;
 let selectedFileType = null;
+const memorySummary = document.getElementById('memorySummary');
+const historyList = document.getElementById('historyList');
+const newChatButton = document.getElementById('newChatButton');
+const saveHistoryButton = document.getElementById('saveHistoryButton');
+
+const CHAT_HISTORY_KEY = 'lorongWaktuChatHistory';
+let currentHistoryId = null;
+let chatHistory = [];
+
+const updateMemorySummary = (text) => {
+  if (!memorySummary) return;
+  if (!text) {
+    memorySummary.classList.add('hidden');
+    memorySummary.textContent = '';
+    return;
+  }
+  memorySummary.textContent = text;
+  memorySummary.classList.remove('hidden');
+};
+
+const fetchMemorySummary = async () => {
+  try {
+    const response = await fetch('/memory-summary');
+    if (!response.ok) throw new Error('Tidak bisa memuat memori');
+    const data = await response.json();
+    updateMemorySummary(data.memorySummary || 'Belum ada percakapan tersimpan');
+  } catch (error) {
+    updateMemorySummary('Belum ada percakapan tersimpan');
+  }
+};
 
 const appendMessage = (text, role, file = null, fileType = null) => {
   if (chatMessages.classList.contains('hidden')) {
@@ -67,6 +97,155 @@ const appendMessage = (text, role, file = null, fileType = null) => {
 
   chatMessages.appendChild(wrapper);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+};
+
+const saveChatHistoryToStorage = () => {
+  localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+};
+
+const loadChatHistoryFromStorage = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)) || [];
+  } catch {
+    return [];
+  }
+};
+
+const formatHistoryTitle = (messages) => {
+  const firstUser = messages.find((item) => item.role === 'user');
+  if (!firstUser || !firstUser.text) return 'Percakapan baru';
+  return firstUser.text.length > 30 ? `${firstUser.text.slice(0, 30)}...` : firstUser.text;
+};
+
+const formatHistoryDate = (iso) => {
+  const date = new Date(iso);
+  return date.toLocaleString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const renderHistoryList = () => {
+  historyList.innerHTML = '';
+
+  if (!chatHistory.length) {
+    const empty = document.createElement('div');
+    empty.className = 'history-empty';
+    empty.textContent = 'Belum ada riwayat tersimpan.';
+    historyList.appendChild(empty);
+    return;
+  }
+
+  chatHistory.slice().reverse().forEach((item) => {
+    const row = document.createElement('div');
+    row.className = 'history-item';
+    row.dataset.id = item.id;
+
+    const content = document.createElement('div');
+    content.className = 'history-item-content';
+    content.innerHTML = `
+      <p class="history-item-title">${item.title}</p>
+      <p class="history-item-date">${formatHistoryDate(item.createdAt)}</p>
+    `;
+
+    const actions = document.createElement('div');
+    actions.className = 'history-item-actions';
+
+    const loadButton = document.createElement('button');
+    loadButton.className = 'history-action-button';
+    loadButton.type = 'button';
+    loadButton.title = 'Buka riwayat';
+    loadButton.textContent = '▶';
+    loadButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      loadHistoryItem(item.id);
+    });
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'history-action-button';
+    deleteButton.type = 'button';
+    deleteButton.title = 'Hapus riwayat';
+    deleteButton.textContent = '×';
+    deleteButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      deleteHistoryItem(item.id);
+    });
+
+    actions.appendChild(loadButton);
+    actions.appendChild(deleteButton);
+    row.appendChild(content);
+    row.appendChild(actions);
+
+    row.addEventListener('click', () => loadHistoryItem(item.id));
+    historyList.appendChild(row);
+  });
+};
+
+const getConversation = () =>
+  Array.from(document.querySelectorAll('.message')).map((messageElement) => {
+    const text = messageElement.querySelector('p')?.textContent || '';
+    const role = messageElement.classList.contains('user-message') ? 'user' : 'assistant';
+    return { role, text };
+  });
+
+const getCurrentHistoryTitle = () => {
+  const messages = getConversation();
+  return formatHistoryTitle(messages);
+};
+
+const clearChat = () => {
+  chatMessages.innerHTML = '';
+  chatMessages.classList.add('hidden');
+  selectedFile = null;
+  selectedFileType = null;
+  removePreview();
+  currentHistoryId = null;
+};
+
+const loadHistoryItem = (id) => {
+  const item = chatHistory.find((entry) => entry.id === id);
+  if (!item) return;
+
+  clearChat();
+  currentHistoryId = id;
+  item.messages.forEach((message) => {
+    appendMessage(message.text, message.role);
+  });
+};
+
+const deleteHistoryItem = (id) => {
+  chatHistory = chatHistory.filter((entry) => entry.id !== id);
+  saveChatHistoryToStorage();
+  if (currentHistoryId === id) {
+    clearChat();
+  }
+  renderHistoryList();
+};
+
+const saveCurrentConversation = () => {
+  const messages = getConversation();
+  if (!messages.length) return;
+
+  const historyItem = {
+    id: currentHistoryId || Date.now().toString(),
+    title: getCurrentHistoryTitle(),
+    messages,
+    createdAt: new Date().toISOString()
+  };
+
+  if (currentHistoryId) {
+    chatHistory = chatHistory.map((entry) =>
+      entry.id === currentHistoryId ? historyItem : entry
+    );
+  } else {
+    chatHistory.push(historyItem);
+    currentHistoryId = historyItem.id;
+  }
+
+  saveChatHistoryToStorage();
+  renderHistoryList();
 };
 
 const appendTypingMessage = (text) => {
@@ -180,12 +359,12 @@ const removeTypingMessage = () => {
   if (typing) typing.remove();
 };
 
-const getConversation = () =>
-  Array.from(document.querySelectorAll('.message')).map((messageElement) => {
-    const text = messageElement.querySelector('p')?.textContent || '';
-    const role = messageElement.classList.contains('user-message') ? 'user' : 'assistant';
-    return { role, text };
-  });
+// const getConversation = () =>
+//   Array.from(document.querySelectorAll('.message')).map((messageElement) => {
+//     const text = messageElement.querySelector('p')?.textContent || '';
+//     const role = messageElement.classList.contains('user-message') ? 'user' : 'assistant';
+//     return { role, text };
+//   });
 
 const sendMessage = async (message) => {
   
@@ -207,6 +386,7 @@ const sendMessage = async (message) => {
     const data = await response.json();
     removeLoadingMessage();
     await appendTypingMessage(data.result || 'Maaf, saya tidak bisa merespons saat ini.');
+    updateMemorySummary(data.memorySummary);
 
   } catch (error) {
     removeLoadingMessage();
@@ -247,12 +427,21 @@ const sendFileMessage = async (file, endpoint) => {
     const data = await response.json();
     removeLoadingMessage();
     await appendTypingMessage(data.result || 'Maaf, saya tidak bisa memproses file ini.');
+    updateMemorySummary(data.memorySummary);
   } catch (error) {
     removeLoadingMessage();
     await appendTypingMessage('Gagal mengunggah file. Silakan coba lagi.');
     console.error(error);
   }
 };
+
+saveHistoryButton.addEventListener('click', () => {
+  saveCurrentConversation();
+});
+
+newChatButton.addEventListener('click', () => {
+  clearChat();
+});
 
 attachButton.addEventListener('click', () => {
   uploadMenu.classList.toggle('hidden');
@@ -371,3 +560,8 @@ chatInput.addEventListener('keydown', (event) => {
     chatForm.dispatchEvent(new Event('submit'));
   }
 });
+
+chatHistory = loadChatHistoryFromStorage();
+renderHistoryList();
+fetchMemorySummary();
+

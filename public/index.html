@@ -8,14 +8,29 @@
   </head>
   <body>
     <main class="app-shell">
+      <aside class="history-panel">
+        <div class="history-header">
+          <div>
+            <p class="history-title">Riwayat Chat</p>
+            <p class="history-subtitle">Simpan dan buka percakapan sebelumnya.</p>
+          </div>
+          <button id="newChatButton" type="button" class="history-button">Baru</button>
+        </div>
+
+        <button id="saveHistoryButton" type="button" class="history-save-button">Simpan Percakapan</button>
+        <div id="historyList" class="history-list"></div>
+      </aside>
+
       <section class="chat-panel">
         <header class="chat-header">
           <div class="hero-avatar"></div>
           <div class="hero-info">
-            <p class="hero-title">Lorong Waktu</p>
-            <p class="hero-subtitle">Pahlawan Dunia</p>
+            <p class="hero-title">Heroic Chronicles</p>
+            <p class="hero-subtitle"></p>
           </div>
         </header>
+
+        <div id="memorySummary" class="memory-summary hidden"></div>
 
         <div id="chatMessages" class="chat-messages hidden">
         </div>

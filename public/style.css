@@ -37,7 +37,7 @@ body {
 
 .app-shell {
   position: relative;
-  width: min(430px, 100%);
+  width: min(960px, 100%);
   height: 90vh;
   max-height: 900px;
   border: 1px solid var(--border);
@@ -45,8 +45,119 @@ body {
   background: linear-gradient(180deg, rgba(4, 12, 27, 0.96), rgba(6, 18, 45, 0.98));
   box-shadow: var(--shadow);
   overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px minmax(430px, 1fr);
+  gap: 18px;
+}
+
+.history-panel {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  padding: 24px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.history-subtitle {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+}
+
+.history-button,
+.history-save-button {
+  border: none;
+  background: linear-gradient(135deg, #f5d66f, #d79e2d);
+  color: #08111c;
+  border-radius: 18px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.history-button:hover,
+.history-save-button:hover {
+  transform: translateY(-1px);
+}
+
+.history-list {
+  display: grid;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.history-empty {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.history-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: rgba(245, 214, 111, 0.08);
+}
+
+.history-item-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.history-item-date {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.history-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.history-action-button {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.history-action-button:hover {
+  background: rgba(245, 214, 111, 0.18);
 }
 
 .chat-panel {
@@ -70,7 +181,7 @@ body {
   height: 56px;
   border-radius: 18px;
   position: relative;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 240, 180, 0.95), rgba(245, 214, 111, 0.9) 35%, rgba(223, 181, 75, 0.8) 70%, rgba(7, 18, 47, 0.15) 100%);
+  /* background: radial-gradient(circle at 30% 30%, rgba(255, 240, 180, 0.95), rgba(245, 214, 111, 0.9) 35%, rgba(223, 181, 75, 0.8) 70%, rgba(7, 18, 47, 0.15) 100%); */
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 16px 35px rgba(0, 0, 0, 0.2);
   display: grid;
   place-items: center;
@@ -78,15 +189,15 @@ body {
 }
 
 .hero-avatar::before {
-  content: '⏳';
-  font-size: 1.25rem;
+  content: '🌐';
+  font-size: 2rem;
 }
 
 .hero-avatar::after {
   content: '';
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* border: 1px solid rgba(255, 255, 255, 0.1); */
   border-radius: 50%;
   opacity: 0.45;
 }
@@ -128,6 +239,16 @@ body {
   opacity: 0;
 }
 
+.memory-summary {
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .hero-name {
   margin: 0;
   font-weight: 700;
@@ -143,10 +264,10 @@ body {
 .chat-messages {
   display: grid;
   gap: 14px;
-  max-height: 92%;
+  max-height: 84%;
   overflow-y: auto;
   padding-right: 4px;
-  padding-top: 10px;
+  /* padding-top: 10px; */
   padding-bottom: 10px;
   animation: fadeIn 0.5s ease-out;
 }
@@ -230,6 +351,7 @@ body {
 }
 
 .chat-input-area {
+  width: 68.5%;
   display: grid;
   grid-template-columns: auto 1fr auto auto;
   gap: 5px;
@@ -237,7 +359,7 @@ body {
   padding: 20px;
   position: absolute;
   bottom: 0;
-  left: 0;
+  /* left: 0; */
   right: 0;
   background: rgba(4, 12, 27, 0);
   padding-top: 12px;
@@ -248,9 +370,10 @@ body {
   grid-column: 1 / -1;
   margin-bottom: 10px;
   padding: 10px;
-  background: rgb(12, 24, 58, 0.96);
+  background: rgb(12, 24, 58);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -302,7 +425,7 @@ body {
   gap: 8px;
   padding: 12px;
   width: 160px;
-  background: rgba(7, 18, 47, 0.96);
+  background: rgb(7, 18, 47);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
@@ -316,6 +439,8 @@ body {
 .upload-option {
   border: none;
   background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
   color: var(--text);
   padding: 10px 14px;
   border-radius: 14px;
@@ -366,6 +491,20 @@ body {
 .send-button {
   background: linear-gradient(135deg, #f5d66f, #d79e2d);
   color: #08111c;
+}
+
+@media (max-width: 950px) {
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+
+  .history-panel {
+    width: 100%;
+    max-height: 240px;
+  }
 }
 
 @media (max-width: 500px) {
