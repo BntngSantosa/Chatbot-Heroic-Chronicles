@@ -33,7 +33,7 @@ Chatbot Heroic Chronicles adalah aplikasi web interaktif yang menghadirkan perca
 3. Masuk ke folder proyek:
 
 ```bash
-cd "C:/Users/bntngsantosa/Documents/Final Project Hacktiv8/Chatbot-lorong-waktu"
+cd "Your project"
 ```
 
 4. Instal dependensi:
